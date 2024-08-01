@@ -1,0 +1,43 @@
+import psycopg2
+import pandas as pd
+from data_warehouse.database_connection.config import load_config_test, load_config2
+
+try:
+    print("Connection to ElectifyDB in progress...")
+    con = load_config2()
+    print('Loading ElectifyDB in progress...\n')
+    with psycopg2.connect(**con) as conn:
+        with conn.cursor() as cur:
+            # sql query to retrieve data from the question table in the operational database
+            sql = """
+                select distinct question_type from question;
+               """
+    questionTypeInfo = pd.read_sql(sql, conn)
+    print(questionTypeInfo)
+
+    print("Connection to test DWH in progress...")
+    configure = load_config_test()
+    print('Loading in progress...\n')
+    with psycopg2.connect(**configure) as conn:
+        with conn.cursor() as cur:
+            # sql query to truncate table
+            del_query = """
+            TRUNCATE TABLE dim_Question_Type cascade;
+            """
+            cur.execute(del_query)
+
+            # sql query to insert
+            insert_query = """
+            INSERT INTO dim_Question_Type (question_type_name) 
+            VALUES (%s);
+            """
+
+            # Execute the INSERT query
+            for index, row in questionTypeInfo.iterrows():
+                cur.execute(insert_query, (row['question_type'],))
+
+            # Commit the transaction
+            conn.commit()
+
+except (psycopg2.DatabaseError, Exception) as error:
+    print(f"Error: {error}")
