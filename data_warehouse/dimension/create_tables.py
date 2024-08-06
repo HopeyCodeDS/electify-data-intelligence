@@ -106,7 +106,7 @@ def create_table_dim_question(cursor):
         CREATE TABLE dim_Question (
             question_id SERIAL PRIMARY KEY,
             question_type_id int NOT NULL,
-            question_text VARCHAR(255),
+            -- question_text VARCHAR(255),
             FOREIGN KEY (question_type_id) REFERENCES dim_Question_Type(question_type_id)
         )
     """
@@ -118,6 +118,7 @@ def create_table_dim_question(cursor):
         print(f"Table '{table_name}' already exists, skipping creation.")
 
 
+'''
 def create_table_dim_answer(cursor):
     """Create the dim_Answer table"""
     command = """
@@ -132,24 +133,20 @@ def create_table_dim_answer(cursor):
         print(f"Table '{table_name}' created successfully.")
     else:
         print(f"Table '{table_name}' already exists, skipping creation.")
-
+'''
 
 def create_table_fact_survey(cursor):
     """Create the Fact_Survey table"""
     command = """
         CREATE TABLE Fact_Survey (
+        survey_id serial primary key , -- Surrogate key
             date_id int,
             theme_id int,
             organization_id int,
-            question_id int,
-            answer_id int,
-            country_id int,
-            number_of_questions_answered int,
+            number_of_questions int,
             FOREIGN KEY (date_id) REFERENCES dim_Date(date_id),
             FOREIGN KEY (theme_id) REFERENCES dim_Theme(theme_id),
-            FOREIGN KEY (organization_id) REFERENCES dim_Organization(organization_id),
-            FOREIGN KEY (question_id) REFERENCES dim_Question(question_id),
-            FOREIGN KEY (country_id) REFERENCES dim_Country(country_id)
+            FOREIGN KEY (organization_id) REFERENCES dim_Organization(organization_id)
         )
     """
     table_name = "Fact_Survey"
@@ -159,7 +156,42 @@ def create_table_fact_survey(cursor):
     else:
         print(f"Table '{table_name}' already exists, skipping creation.")
 
+def create_table_survey_Question_bridge (cursor):
+    """Create the Survey_Question_Bridge table"""
+    command = """
+        CREATE TABLE Survey_Question_Bridge (
+            survey_id int,
+            question_id int,
+            FOREIGN KEY (survey_id) REFERENCES Fact_Survey(survey_id) ON DELETE CASCADE,
+            FOREIGN KEY (question_id) REFERENCES dim_Question(question_id) ON DELETE CASCADE
+        )
+    """
+    table_name = "Survey_Question_Bridge"
+    if not table_exists(cursor, table_name):
+        cursor.execute(command)
+        print(f"Table '{table_name}' created successfully.")
+    else:
+        print(f"Table '{table_name}' already exists, skipping creation.")
 
+
+def create_table_survey_country_bridge (cursor):
+    """Create the Survey_Country_Bridge table"""
+    command = """
+        CREATE TABLE Survey_Country_Bridge (
+            survey_id int,
+            country_id int,
+            FOREIGN KEY (survey_id) REFERENCES Fact_Survey(survey_id) ON DELETE CASCADE,
+            FOREIGN KEY (country_id) REFERENCES dim_Country(country_id) ON DELETE CASCADE
+        )
+    """
+    table_name = "Survey_Country_Bridge"
+    if not table_exists(cursor, table_name):
+        cursor.execute(command)
+        print(f"Table '{table_name}' created successfully.")
+    else:
+        print(f"Table '{table_name}' already exists, skipping creation.")
+
+'''
 def create_table_etl_tracking(cursor):
     """Create the etl_tracking table"""
     command = """
@@ -174,7 +206,7 @@ def create_table_etl_tracking(cursor):
         print(f"Table '{table_name}' created successfully.")
     else:
         print(f"Table '{table_name}' already exists, skipping creation.")
-
+'''
 
 def create_tables():
     """Create all tables in the PostgreSQL database"""
@@ -188,9 +220,9 @@ def create_tables():
                 create_table_dim_organization(cur)
                 create_table_dim_question_type(cur)
                 create_table_dim_question(cur)
-                create_table_dim_answer(cur)
                 create_table_fact_survey(cur)
-                create_table_etl_tracking(cur)
+                create_table_survey_Question_bridge(cur)
+                create_table_survey_country_bridge(cur)
         print("All tables created successfully.")
     except psycopg2.DatabaseError as db_error:
         print(f"Database error: {db_error}")
