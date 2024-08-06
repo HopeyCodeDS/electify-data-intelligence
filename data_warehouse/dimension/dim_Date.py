@@ -43,7 +43,7 @@ def fill_table_dim_Date():
                     dayOfMonth = start_date.day
                     month = start_date.month
                     year = start_date.year
-                    dayOfWeek = start_date.day_of_week
+                    dayOfWeek = start_date.day_of_week + 1
                     dayOfYear = start_date.day_of_year
                     weekday = start_date.strftime('%A')
                     monthName = start_date.strftime('%B')
