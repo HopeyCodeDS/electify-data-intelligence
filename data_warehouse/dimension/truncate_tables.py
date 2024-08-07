@@ -29,7 +29,7 @@ def truncateTable(cursor, connection, table_name):
 def truncate_all_tables(cursor, connection):
     """Truncate all tables"""
     tables = ["Fact_survey", "dim_Date", "dim_Theme", "dim_Country", "dim_Organization",
-              "dim_Question_Type", "dim_Question", "dim_Answer", "etl_tracking"]
+              "dim_Question_Type", "dim_Question"]
 
     for table in tables:
         truncateTable(cursor, connection, table)

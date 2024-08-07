@@ -29,9 +29,9 @@ def dropTable(cursor, connection, table_name):
 
 def drop_all_tables(cursor, connection):
     """Drop all tables in the correct order"""
-    # tables = ["fact_survey", "dim_Date", "dim_Theme", "dim_Country", "dim_Organization",
-    #           "dim_Question_Type", "dim_Question", "dim_Answer", "etl_tracking"]
-    tables = ["fact_survey"]
+    tables = ["fact_survey", "dim_Date", "dim_Theme", "dim_Country", "dim_Organization",
+              "dim_Question_Type", "survey_question_bridge", "survey_country_bridge"]
+    # tables = ["fact_survey"]
 
     for table in tables:
         dropTable(cursor, connection, table)
