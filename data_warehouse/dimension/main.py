@@ -25,5 +25,8 @@ subprocess.run(["python", "dim_Question.py"])
 # Run Fact_survey.py
 subprocess.run(["python", "Fact_survey.py"])
 
-# Run update_tables.py
-subprocess.run(["python", "update_tables.py"])
+# Run survey_country_bridge.py
+subprocess.run(["python", "survey_country_bridge.py"])
+
+# Run survey_question_bridge.py
+subprocess.run(["python", "survey_question_bridge.py"])
