@@ -51,6 +51,20 @@ def create_table_dim_theme(cursor):
     else:
         print(f"Table '{table_name}' already exists, skipping creation.")
 
+def create_table_dim_subtheme(cursor):
+    """Create the dim_SubTheme table"""
+    command = """
+        CREATE TABLE dim_SubTheme (
+            subtheme_id SERIAL PRIMARY KEY,
+            subtheme_name VARCHAR(255) NOT NULL
+        )
+    """
+    table_name = "dim_SubTheme"
+    if not table_exists(cursor, table_name):
+        cursor.execute(command)
+        print(f"Table '{table_name}' created successfully.")
+    else:
+        print(f"Table '{table_name}' already exists, skipping creation.")
 
 def create_table_dim_country(cursor):
     """Create the dim_Country table"""
@@ -106,7 +120,7 @@ def create_table_dim_question(cursor):
         CREATE TABLE dim_Question (
             question_id SERIAL PRIMARY KEY,
             question_type_id int NOT NULL,
-            -- question_text VARCHAR(255),
+            question_text VARCHAR(255),
             FOREIGN KEY (question_type_id) REFERENCES dim_Question_Type(question_type_id)
         )
     """
@@ -118,34 +132,19 @@ def create_table_dim_question(cursor):
         print(f"Table '{table_name}' already exists, skipping creation.")
 
 
-'''
-def create_table_dim_answer(cursor):
-    """Create the dim_Answer table"""
-    command = """
-        CREATE TABLE dim_Answer (
-            answer_id SERIAL PRIMARY KEY,
-            answer_type_name VARCHAR(255) NOT NULL
-        )
-    """
-    table_name = "dim_Answer"
-    if not table_exists(cursor, table_name):
-        cursor.execute(command)
-        print(f"Table '{table_name}' created successfully.")
-    else:
-        print(f"Table '{table_name}' already exists, skipping creation.")
-'''
-
 def create_table_fact_survey(cursor):
     """Create the Fact_Survey table"""
     command = """
         CREATE TABLE Fact_Survey (
-        survey_id serial primary key , -- Surrogate key
-            date_id int,
-            theme_id int,
-            organization_id int,
-            number_of_questions int,
+            survey_id SERIAL PRIMARY KEY , -- Surrogate key
+            date_id INT,
+            theme_id INT,
+            subtheme_id INT,
+            organization_id INT,
+            number_of_questions INT,
             FOREIGN KEY (date_id) REFERENCES dim_Date(date_id),
             FOREIGN KEY (theme_id) REFERENCES dim_Theme(theme_id),
+            FOREIGN KEY (subtheme_id) REFERENCES dim_SubTheme(subtheme_id),
             FOREIGN KEY (organization_id) REFERENCES dim_Organization(organization_id)
         )
     """
@@ -162,6 +161,7 @@ def create_table_survey_Question_bridge (cursor):
         CREATE TABLE Survey_Question_Bridge (
             survey_id int,
             question_id int,
+            PRIMARY KEY (survey_id, question_id),
             FOREIGN KEY (survey_id) REFERENCES Fact_Survey(survey_id) ON DELETE CASCADE,
             FOREIGN KEY (question_id) REFERENCES dim_Question(question_id) ON DELETE CASCADE
         )
@@ -180,6 +180,7 @@ def create_table_survey_country_bridge (cursor):
         CREATE TABLE Survey_Country_Bridge (
             survey_id int,
             country_id int,
+            PRIMARY KEY (survey_id, country_id),
             FOREIGN KEY (survey_id) REFERENCES Fact_Survey(survey_id) ON DELETE CASCADE,
             FOREIGN KEY (country_id) REFERENCES dim_Country(country_id) ON DELETE CASCADE
         )
@@ -191,22 +192,6 @@ def create_table_survey_country_bridge (cursor):
     else:
         print(f"Table '{table_name}' already exists, skipping creation.")
 
-'''
-def create_table_etl_tracking(cursor):
-    """Create the etl_tracking table"""
-    command = """
-        CREATE TABLE etl_tracking (
-            table_name VARCHAR(255) PRIMARY KEY,
-            last_load_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """
-    table_name = "etl_tracking"
-    if not table_exists(cursor, table_name):
-        cursor.execute(command)
-        print(f"Table '{table_name}' created successfully.")
-    else:
-        print(f"Table '{table_name}' already exists, skipping creation.")
-'''
 
 def create_tables():
     """Create all tables in the PostgreSQL database"""
@@ -216,6 +201,7 @@ def create_tables():
             with conn.cursor() as cur:
                 create_table_dim_date(cur)
                 create_table_dim_theme(cur)
+                create_table_dim_subtheme(cur)
                 create_table_dim_country(cur)
                 create_table_dim_organization(cur)
                 create_table_dim_question_type(cur)
