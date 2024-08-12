@@ -37,6 +37,7 @@ try:
 
             # Commit the transaction
             conn.commit()
+            print("Theme data inserted successfully!")
 
 except (psycopg2.DatabaseError, Exception) as error:
     print(f"Error: {error}")
