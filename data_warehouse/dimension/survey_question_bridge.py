@@ -1,71 +1,92 @@
 import psycopg2
-import pandas as pd
-from psycopg2 import sql
 from data_warehouse.database_connection.config import load_config, load_config2
 
-try:
+def fill_bridge_tables():
+    """Fill the survey_question_bridge table with appropriate survey_id and question_id."""
+    try:
+        # Load connection configurations
+        config_op = load_config2()
+        config_dwh = load_config()
 
-    # Load connection configurations
-    config_op = load_config2()
-    config_dwh = load_config()
+        # Establish connections
+        conn_op = psycopg2.connect(**config_op)
+        conn_dwh = psycopg2.connect(**config_dwh)
 
-    # Establish connections
-    conn_op = psycopg2.connect(**config_op)
-    conn_dwh = psycopg2.connect(**config_dwh)
+        # Create cursors
+        cursor_op = conn_op.cursor()
+        cursor_dwh = conn_dwh.cursor()
 
-    # Create cursors
-    cursor_op = conn_op.cursor()
-    cursor_dwh = conn_dwh.cursor()
+        # Fill survey_question_bridge table
+        survey_question_query = """
+            SELECT
+                q.id AS question_id,
+                qnnr.id AS questionnaire_id
+            FROM
+                question q
+            LEFT JOIN
+                questionnaire qnnr ON q.questionnaire_id = qnnr.id
+            ORDER BY
+                q.id, qnnr.id;
+            """
 
-    # Fetch data from questionnaire
-    questionnaireQuery = """
-        SELECT questionnaire.id as survey_id, organization_id as city_id FROM questionnaire
-        JOIN organization ON organization.id = questionnaire.organization_id
-        """
-    cursor_op.execute(questionnaireQuery)
+        cursor_op.execute(survey_question_query)
+        print("About to load data into the survey_question_bridge table...")
 
-    for row in cursor_op.fetchall():
-        survey_id, city_id = row
+        # Create a mapping of survey_id to number_of_questions
+        survey_mapping_query = """
+            SELECT 
+                survey_id, 
+                number_of_questions 
+            FROM 
+                fact_survey;
+            """
+        cursor_dwh.execute(survey_mapping_query)
+        survey_mapping = {row[0]: row[1] for row in cursor_dwh.fetchall()}
 
-        # Check if the record already exists in the target database
-        cursor_dwh.execute("SELECT survey_id FROM survey_city_bridge WHERE survey_id = %s", (survey_id,))
-        if not cursor_dwh.fetchone():
+        for row in cursor_op.fetchall():
+            question_id, questionnaire_id = row
 
-            # Fetch fact_survey data
-            factQuery = "select survey_id from fact_survey where survey_id = %s"
-            cursor_dwh.execute(factQuery, (survey_id,))
-            surveyId = cursor_dwh.fetchone()
-            if surveyId:
-                surveyId = surveyId[0]
-            else:
-                print(f"Error: survey_id not found for survey_id: {survey_id}")
-                continue
+            # Find the corresponding survey_id based on the number of questions
+            for survey_id, num_questions in survey_mapping.items():
+                if num_questions > 0:  # Only consider surveys with questions
+                    # Fetch dim_question data
+                    cursor_dwh.execute("SELECT question_id FROM dim_question WHERE question_id = %s", (question_id,))
+                    question_id_row = cursor_dwh.fetchone()
+                    if question_id_row:
+                        question_id = question_id_row[0]
+                    else:
+                        print(f"Error: question_id not found for question_id: {question_id}")
+                        continue
 
-            # Fetch dim_City data
-            cityQuery = "select city_id from dim_City where city_id = %s"
-            cursor_dwh.execute(cityQuery, (city_id,))
-            cityId = cursor_dwh.fetchone()
-            if cityId:
-                cityId = cityId[0]
-            else:
-                print(f"Error: city_id not found for city_id: {city_id}")
-                continue
-
-            # sql query to truncate table
-            del_query = """
-                        TRUNCATE TABLE survey_city_bridge CASCADE;
+                    # Insert into survey_question_bridge
+                    insert_query = """
+                        INSERT INTO survey_question_bridge (survey_id, question_id)
+                        VALUES (%s, %s)
                         """
-            cursor_dwh.execute(del_query)
+                    cursor_dwh.execute(insert_query, (survey_id, question_id))
+                    # Decrease the number_of_questions for the survey
+                    survey_mapping[survey_id] -= 1
+                    break  # Move to the next question after inserting
 
-            insert_query = """
-                            INSERT INTO survey_city_bridge (survey_id, city_id) 
-                            VALUES (%s, %s);
-                            """
-            cursor_dwh.execute(insert_query, (surveyId, cityId))
+        conn_dwh.commit()
+        print("survey_question_bridge table data filled successfully!")
 
-            # Commit the transaction
-            conn_dwh.commit()
+    except (Exception, psycopg2.Error) as error:
+        print("Error while working with PostgreSQL:", error)
+
+    finally:
+        # Close cursors and connections
+        if 'cursor_op' in locals():
+            cursor_op.close()
+        if 'cursor_dwh' in locals():
+            cursor_dwh.close()
+        if 'conn_op' in locals():
+            conn_op.close()
+        if 'conn_dwh' in locals():
+            conn_dwh.close()
 
 
-except (psycopg2.DatabaseError, Exception) as error:
-    print(f"Error: {error}")
+if __name__ == "__main__":
+    fill_bridge_tables()
+    print()
+    print('Loading complete!\n')
