@@ -1,12 +1,12 @@
 import psycopg2
-from data_warehouse.database_connection.config import load_config, load_config2
+from data_warehouse.database_connection.config import load_config_localDWH, load_config_localDB
 
 def fill_country_bridge_tables():
     """Fill the survey_country_bridge table with survey_id and organization_id as country_id."""
     try:
         # Load connection configurations
-        config_op = load_config2()
-        config_dwh = load_config()
+        config_op = load_config_localDB()
+        config_dwh = load_config_localDWH()
 
         # Establish connections
         conn_op = psycopg2.connect(**config_op)

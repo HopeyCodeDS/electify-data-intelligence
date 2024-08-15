@@ -1,6 +1,7 @@
 import psycopg2
 import pandas as pd
-from data_warehouse.database_connection.config import load_config_localDWH, load_config_localDB
+from psycopg2 import sql
+from data_warehouse.database_connection.config import load_config_localDWH, load_config_localDB, load_config_prodDWH, load_config_prodDB
 
 try:
     print("Connection to ElectifyDB in progress...")
@@ -8,37 +9,35 @@ try:
     print('Loading ElectifyDB in progress...\n')
     with psycopg2.connect(**con) as conn:
         with conn.cursor() as cur:
-            # sql query to retrieve data from the subtheme table in the operational database
+            # sql query to retrieve data from the theme table in the operational database
             sql = """
-                select subtheme.name from subtheme
-                left join theme on subtheme.theme_id = theme.id;
+                select date_created, name from theme;
                """
-    subthemeInfo = pd.read_sql(sql, conn)
+    themeInfo = pd.read_sql(sql, conn)
 
     print("Connection to DWH in progress...")
-    configure = load_config_localDWH()
+    configure = load_config_prodDWH()
     print('Loading in progress...\n')
     with psycopg2.connect(**configure) as conn:
         with conn.cursor() as cur:
             # sql query to truncate table
             del_query = """
-            TRUNCATE TABLE dim_SubTheme cascade;
+            TRUNCATE TABLE dim_Theme cascade;
             """
             cur.execute(del_query)
 
             # sql query to insert
             insert_query = """
-            INSERT INTO dim_SubTheme (subtheme_name) 
-            VALUES (%s);
+            INSERT INTO dim_Theme (theme_name, date_created) 
+            VALUES (%s,%s);
             """
 
             # Execute the INSERT query
-            for index, row in subthemeInfo.iterrows():
-                cur.execute(insert_query, (row['name'],))
+            for index, row in themeInfo.iterrows():
+                cur.execute(insert_query, (row['name'],row['date_created'],))
 
             # Commit the transaction
             conn.commit()
-            print("Subtheme data inserted successfully!")
 
 except (psycopg2.DatabaseError, Exception) as error:
     print(f"Error: {error}")

@@ -1,10 +1,11 @@
 import psycopg2
 import pandas as pd
-from data_warehouse.database_connection.config import load_config, load_config2
+from psycopg2 import sql
+from data_warehouse.database_connection.config import load_config_localDWH, load_config_localDB, load_config_prodDWH, load_config_prodDB
 
 try:
     print("Connection to ElectifyDB in progress...")
-    con = load_config2()
+    con = load_config_localDB()
     print('Loading ElectifyDB in progress...\n')
     with psycopg2.connect(**con) as conn:
         with conn.cursor() as cur:
@@ -15,7 +16,7 @@ try:
     countryInfo = pd.read_sql(sql, conn)
 
     print("Connection to DWH in progress...")
-    configure = load_config()
+    configure = load_config_localDWH()
     print('Loading in progress...\n')
     with psycopg2.connect(**configure) as conn:
         with conn.cursor() as cur:

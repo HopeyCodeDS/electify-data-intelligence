@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-from data_warehouse.database_connection.config import load_config, load_config2
+from data_warehouse.database_connection.config import load_config_localDWH, load_config_localDB
 
 schema = "public"
 
@@ -17,7 +17,7 @@ def table_exists(cursor, table_name):
 def dropTable(cursor, connection, table_name):
     """Drop a table if it exists"""
     if table_exists(cursor, table_name):
-        cursor.execute(sql.SQL("DROP TABLE IF EXISTS {}.{}").format(
+        cursor.execute(sql.SQL("DROP TABLE IF EXISTS {}.{} CASCADE").format(
             sql.Identifier(schema),
             sql.Identifier(table_name)
         ))
@@ -29,17 +29,21 @@ def dropTable(cursor, connection, table_name):
 
 def drop_all_tables(cursor, connection):
     """Drop all tables in the correct order"""
-    tables = ["fact_survey", "dim_Date", "dim_Theme", "dim_Country", "dim_Organization",
-              "dim_Question_Type", "survey_question_bridge", "survey_country_bridge"]
-    # tables = ["fact_survey"]
+    dimension_tables = ["dim_question_type","dim_question","survey_question_bridge","survey_country_bridge","dim_country","dim_date", "dim_theme",
+                        "dim_subtheme", "dim_organization"]
+    fact_table = ["fact_survey"]
 
-    for table in tables:
+    for table in dimension_tables:
         dropTable(cursor, connection, table)
+
+    for table in fact_table:
+        dropTable(cursor, connection, table)
+
 
 
 if __name__ == "__main__":
     try:
-        config = load_config()
+        config = load_config_localDWH()
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 # Drop all tables
