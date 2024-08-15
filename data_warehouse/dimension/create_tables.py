@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-from data_warehouse.database_connection.config import load_config, load_config2, load_config_gcloud
+from data_warehouse.database_connection.config import load_config_localDWH, load_config_localDB, load_config_prodDWH
 
 
 def table_exists(cursor, table_name):
@@ -196,7 +196,7 @@ def create_table_survey_country_bridge (cursor):
 def create_tables():
     """Create all tables in the PostgreSQL database"""
     try:
-        config = load_config()
+        config = load_config_localDWH()
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 create_table_dim_date(cur)

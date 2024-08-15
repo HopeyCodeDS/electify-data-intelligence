@@ -1,5 +1,5 @@
 import psycopg2
-from config import load_config, load_config2, load_config_gcloud, load_config_prodDB
+from config import load_config_localDWH, load_config_localDB, load_config_prodDWH, load_config_prodDB
 
 def connect(config):
     """ Connect to the PostgreSQL database server """
@@ -14,7 +14,10 @@ def connect(config):
 
 
 if __name__ == '__main__':
-    config = load_config_gcloud()
+    config = load_config_prodDWH()
+    # config = load_config_prodDB()
+    # config = load_config2()
+    # config = load_config()
     connect(config)
     print(config)
     # test()

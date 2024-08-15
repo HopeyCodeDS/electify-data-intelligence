@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 
-def load_config(filename='databaseDWH.ini', section='postgresql'):
+def load_config_localDWH(filename='databaseDWH.ini', section='postgresql'):
     parser = ConfigParser()
     parser.read(filename)
 
@@ -15,7 +15,7 @@ def load_config(filename='databaseDWH.ini', section='postgresql'):
 
     return config
 
-def load_config2(filename='database.ini', section='postgresql'):
+def load_config_localDB(filename='database.ini', section='postgresql'):
     parser = ConfigParser()
     parser.read(filename)
 
@@ -45,7 +45,7 @@ def load_config_test(filename='database_test.ini', section='postgresql'):
 
     return config
 
-def load_config_gcloud(filename='databaseDWHgcloud.ini', section='gcloud-postgresql'):
+def load_config_prodDWH(filename='databaseDWHgcloud.ini', section='gcloud-postgresql'):
     parser = ConfigParser()
     parser.read(filename)
 
@@ -60,7 +60,7 @@ def load_config_gcloud(filename='databaseDWHgcloud.ini', section='gcloud-postgre
 
     return config
 
-def load_config_prodDB(filename='productionDB.ini', section='productionDBcloud'):
+def load_config_prodDB(filename='databaseprodDB.ini', section='gcloud-postgresql'):
     parser = ConfigParser()
     parser.read(filename)
 
@@ -77,10 +77,10 @@ def load_config_prodDB(filename='productionDB.ini', section='productionDBcloud')
 
 if __name__ == '__main__':
     try:
-        config = load_config()
-        config2 = load_config2()
+        config = load_config_localDWH()
+        config2 = load_config_localDB()
         config3 = load_config_test()
-        config4 = load_config_gcloud()
+        config4 = load_config_prodDWH()
         config5 = load_config_prodDB()
         print("Config loaded successfully:")
         print(config)
