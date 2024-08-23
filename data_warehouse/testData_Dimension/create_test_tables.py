@@ -1,6 +1,7 @@
 import psycopg2
+import pandas as pd
 from psycopg2 import sql
-from data_warehouse.database_connection.config import load_config_test, load_config2
+from data_warehouse.database_connection.config import load_config_localDWH, load_config_test, load_config_localDB, load_config_prodDWH, load_config_prodDB
 
 
 def table_exists(cursor, table_name):
@@ -51,6 +52,21 @@ def create_table_dim_theme(cursor):
     else:
         print(f"Table '{table_name}' already exists, skipping creation.")
 
+
+def create_table_dim_subtheme(cursor):
+    """Create the dim_SubTheme table"""
+    command = """
+        CREATE TABLE dim_SubTheme (
+            subtheme_id SERIAL PRIMARY KEY,
+            subtheme_name VARCHAR(255) NOT NULL
+        )
+    """
+    table_name = "dim_SubTheme"
+    if not table_exists(cursor, table_name):
+        cursor.execute(command)
+        print(f"Table '{table_name}' created successfully.")
+    else:
+        print(f"Table '{table_name}' already exists, skipping creation.")
 
 def create_table_dim_country(cursor):
     """Create the dim_Country table"""
@@ -138,21 +154,19 @@ def create_table_fact_survey(cursor):
     """Create the Fact_Survey table"""
     command = """
         CREATE TABLE Fact_Survey (
-            date_id int,
-            theme_id int,
-            organization_id int,
-            question_id int,
-            answer_id int,
-            country_id int,
-            number_of_questions_answered int,
+            survey_id SERIAL PRIMARY KEY , -- Surrogate key
+            date_id INT,
+            theme_id INT,
+            subtheme_id INT,
+            organization_id INT,
+            number_of_questions INT,
             FOREIGN KEY (date_id) REFERENCES dim_Date(date_id),
             FOREIGN KEY (theme_id) REFERENCES dim_Theme(theme_id),
-            FOREIGN KEY (organization_id) REFERENCES dim_Organization(organization_id),
-            FOREIGN KEY (question_id) REFERENCES dim_Question(question_id),
-            FOREIGN KEY (country_id) REFERENCES dim_Country(country_id)
+            FOREIGN KEY (subtheme_id) REFERENCES dim_SubTheme(subtheme_id),
+            FOREIGN KEY (organization_id) REFERENCES dim_Organization(organization_id)
         )
     """
-    table_name = "fact_survey"
+    table_name = "Fact_Survey"
     if not table_exists(cursor, table_name):
         cursor.execute(command)
         print(f"Table '{table_name}' created successfully.")
@@ -160,38 +174,60 @@ def create_table_fact_survey(cursor):
         print(f"Table '{table_name}' already exists, skipping creation.")
 
 
-def create_table_etl_tracking(cursor):
-    """Create the etl_tracking table"""
+def create_table_survey_Question_bridge (cursor):
+    """Create the Survey_Question_Bridge table"""
     command = """
-        CREATE TABLE etl_tracking (
-            table_name VARCHAR(255) PRIMARY KEY,
-            last_load_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        CREATE TABLE Survey_Question_Bridge (
+            survey_id int,
+            question_id int,
+            PRIMARY KEY (survey_id, question_id),
+            FOREIGN KEY (survey_id) REFERENCES Fact_Survey(survey_id) ON DELETE CASCADE,
+            FOREIGN KEY (question_id) REFERENCES dim_Question(question_id) ON DELETE CASCADE
         )
     """
-    table_name = "etl_tracking"
+    table_name = "Survey_Question_Bridge"
     if not table_exists(cursor, table_name):
         cursor.execute(command)
         print(f"Table '{table_name}' created successfully.")
     else:
         print(f"Table '{table_name}' already exists, skipping creation.")
 
+
+def create_table_survey_country_bridge (cursor):
+    """Create the Survey_Country_Bridge table"""
+    command = """
+        CREATE TABLE Survey_Country_Bridge (
+            survey_id int,
+            country_id int,
+            PRIMARY KEY (survey_id, country_id),
+            FOREIGN KEY (survey_id) REFERENCES Fact_Survey(survey_id) ON DELETE CASCADE,
+            FOREIGN KEY (country_id) REFERENCES dim_Country(country_id) ON DELETE CASCADE
+        )
+    """
+    table_name = "Survey_Country_Bridge"
+    if not table_exists(cursor, table_name):
+        cursor.execute(command)
+        print(f"Table '{table_name}' created successfully.")
+    else:
+        print(f"Table '{table_name}' already exists, skipping creation.")
 
 def create_tables():
     """Create all tables in the PostgreSQL database"""
     try:
-        print("Connection to test DWH in progress...")
-        config = load_config_test()
+        config = load_config_localDWH()
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cur:
                 create_table_dim_date(cur)
                 create_table_dim_theme(cur)
+                create_table_dim_subtheme(cur)
                 create_table_dim_country(cur)
                 create_table_dim_organization(cur)
                 create_table_dim_question_type(cur)
                 create_table_dim_question(cur)
-                create_table_dim_answer(cur)
                 create_table_fact_survey(cur)
-                create_table_etl_tracking(cur)
+                create_table_survey_Question_bridge(cur)
+                create_table_survey_country_bridge(cur)
+        print("All tables created successfully.")
     except psycopg2.DatabaseError as db_error:
         print(f"Database error: {db_error}")
     except Exception as error:
