@@ -1,5 +1,5 @@
 import psycopg2
-from data_warehouse.database_connection.config import load_config_test, load_config2
+from data_warehouse.database_connection.config import load_config_test, load_config_localDB
 
 
 def fill_Fact_table():
@@ -7,7 +7,7 @@ def fill_Fact_table():
 
     try:
         # Load connection configurations
-        config_opr = load_config2()
+        config_opr = load_config_localDB()
         config_dwh_test = load_config_test()
 
         # Establish connections

@@ -22,7 +22,7 @@ subprocess.run(["python", "dimQuestion_type.py"])
 # Run dim_Question.py
 subprocess.run(["python", "dimQuestion.py"])
 
-# Run Fact_survey.py
+# Run fact_survey.py
 subprocess.run(["python", "factSurvey.py"])
 
 # Run truncate_test_tables.py

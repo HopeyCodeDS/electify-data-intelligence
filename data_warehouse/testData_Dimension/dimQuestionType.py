@@ -1,10 +1,10 @@
 import psycopg2
 import pandas as pd
-from data_warehouse.database_connection.config import load_config_test, load_config2
+from data_warehouse.database_connection.config import load_config_test, load_config_localDB
 
 try:
     print("Connection to ElectifyDB in progress...")
-    con = load_config2()
+    con = load_config_localDB()
     print('Loading ElectifyDB in progress...\n')
     with psycopg2.connect(**con) as conn:
         with conn.cursor() as cur:
