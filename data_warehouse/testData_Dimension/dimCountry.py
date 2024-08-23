@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-from data_warehouse.database_connection.config import load_config2, load_config_test
+from data_warehouse.database_connection.config import load_config_localDB, load_config_test
 
 
 def table_exists(cursor, table_name):

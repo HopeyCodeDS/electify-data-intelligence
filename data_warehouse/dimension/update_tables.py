@@ -1,5 +1,5 @@
 import psycopg2
-from data_warehouse.database_connection.config import load_config2
+from data_warehouse.database_connection.config import load_config_localDB
 
 def add_updated_at_column(table_name):
     commands = [
@@ -22,7 +22,7 @@ def add_updated_at_column(table_name):
     ]
 
     try:
-        config = load_config2()
+        config = load_config_localDB()
         with psycopg2.connect(**config) as conn:
             with conn.cursor() as cursor:
                 for command in commands:

@@ -1,6 +1,6 @@
 import psycopg2
 from psycopg2 import sql
-from data_warehouse.database_connection.config import load_config_test, load_config2
+from data_warehouse.database_connection.config import load_config_test, load_config_localDB
 
 schema = "public"
 

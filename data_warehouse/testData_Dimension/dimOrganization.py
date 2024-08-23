@@ -1,7 +1,7 @@
 import psycopg2
 import pandas as pd
 from psycopg2 import sql
-from data_warehouse.database_connection.config import load_config_test, load_config2
+from data_warehouse.database_connection.config import load_config_test, load_config_localDB
 
 
 def table_exists(cursor, table_name):
@@ -36,7 +36,7 @@ def insert_into_dim_organization(cursor, organization_info):
 def main():
     try:
         print("Connection to source database in progress...")
-        source_config = load_config2()
+        source_config = load_config_localDB()
         with psycopg2.connect(**source_config) as source_conn:
             with source_conn.cursor() as source_cur:
                 # SQL query to retrieve data from the organization table in the source database
