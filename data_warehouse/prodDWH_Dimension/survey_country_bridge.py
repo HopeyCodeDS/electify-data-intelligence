@@ -8,7 +8,7 @@ def fill_country_bridge_tables():
     """Fill the survey_country_bridge table with survey_id and organization_id as country_id."""
     try:
         # Load connection configurations
-        config_op = load_config_localDB()
+        config_op = load_config_prodDB()
         config_dwh = load_config_prodDWH()
 
         # Establish connections
