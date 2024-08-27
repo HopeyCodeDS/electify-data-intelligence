@@ -47,6 +47,7 @@ ORDER BY
 
 SELECT
     D.season,
+    D.weekday,
     T.theme_name,
     COUNT(S.survey_id) AS total_surveys
 FROM
@@ -56,7 +57,7 @@ JOIN
 JOIN
     Dim_Theme T ON S.theme_id = T.theme_id
 GROUP BY
-    D.season, T.theme_name
+    D.season, D.weekday, T.theme_name
 ORDER BY
     D.season, total_surveys DESC;
 

@@ -7,7 +7,7 @@ def fill_bridge_tables():
     """Fill the survey_question_bridge table with appropriate survey_id and question_id."""
     try:
         # Load connection configurations
-        config_op = load_config_localDB()
+        config_op = load_config_prodDB()
         config_dwh = load_config_prodDWH()
 
         # Establish connections

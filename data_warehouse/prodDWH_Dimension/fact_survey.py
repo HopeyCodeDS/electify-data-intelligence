@@ -8,7 +8,7 @@ def fill_Fact_table():
     """Fill the Fact_survey table"""
     try:
         # Load connection configurations
-        config_op = load_config_localDB()
+        config_op = load_config_prodDB()
         config_dwh = load_config_prodDWH()
 
         # Establish connections

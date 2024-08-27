@@ -5,8 +5,8 @@ from data_warehouse.database_connection.config import load_config_localDWH, load
 
 try:
     print("Connection to ElectifyDB in progress...")
-    con = load_config_localDB()
-
+    # con = load_config_localDB()
+    con = load_config_prodDB()
     print('Loading ElectifyDB in progress...\n')
     with psycopg2.connect(**con) as conn:
         with conn.cursor() as cur:
