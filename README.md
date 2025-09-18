@@ -1,93 +1,207 @@
-# Data_Analysis
+# Electify Youth - Data Analysis & Business Intelligence
+
+[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white)](https://python.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-blue?logo=postgresql&logoColor=white)](https://postgresql.org)
+[![Tableau](https://img.shields.io/badge/Tableau-Desktop-orange?logo=tableau&logoColor=white)](https://tableau.com)
+[![Google Cloud](https://img.shields.io/badge/Google_Cloud-Platform-blue?logo=google-cloud&logoColor=white)](https://cloud.google.com)
+[![Pandas](https://img.shields.io/badge/Pandas-Data_Analysis-green?logo=pandas&logoColor=white)](https://pandas.pydata.org)
+[![Docker](https://img.shields.io/badge/Docker-Containerization-blue?logo=docker&logoColor=white)](https://docker.com)
 
 
 
-## Getting started
+## Overview
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+This repository contains the **Data Analysis and Business Intelligence** component of the **Electify Youth** integration project. While the main application focuses on engaging youth through surveys and questionnaires, this data warehouse solution provides comprehensive analytics and insights into youth engagement patterns.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Key Features:
+- **📊 Dimensional Data Warehouse**: Star schema design optimized for analytical queries
+- **🔄 Multi-Environment ETL Pipeline**: Local, test, and production environments
+- **📈 Youth Engagement Analytics**: Deep insights into survey participation patterns
+- **🌍 Geographic Analysis**: Country-wise engagement tracking
+- **📅 Temporal Analysis**: Seasonal and time-based trend analysis
+- **🎯 Theme & Sub-theme Analytics**: Understanding youth interests and preferences
+- **📊 Interactive Dashboards**: Tableau visualizations for business intelligence
 
-## Add your files
+---
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Project Architecture
+
+### Data Warehouse Structure (Star Schema)
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/kdg-ti/integration-4/2023-2024/team-8/data_analysis.git
-git branch -M main
-git push -uf origin main
+Fact_Survey (Central Fact Table)
+├── dim_Date (Time Dimension)
+├── dim_Country (Geographic Dimension)
+├── dim_Organization (Organization Dimension)
+├── dim_Theme (Survey Theme Dimension)
+├── dim_SubTheme (Sub-theme Dimension)
+├── dim_Question_Type (Question Classification)
+├── dim_Question (Individual Questions)
+├── Survey_Question_Bridge (Many-to-Many)
+└── Survey_Country_Bridge (Many-to-Many)
 ```
 
-## Integrate with your tools
+### Technology Stack
 
-- [ ] [Set up project integrations](https://gitlab.com/kdg-ti/integration-4/2023-2024/team-8/data_analysis/-/settings/integrations)
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Database** | PostgreSQL | Data storage and analytics |
+| **ETL** | Python + psycopg2 | Data extraction and transformation |
+| **Processing** | Pandas | Data manipulation and analysis |
+| **Visualization** | Tableau | Business intelligence dashboards |
+| **Cloud** | Google Cloud Platform | Production deployment |
+| **Orchestration** | Python Scripts | ETL pipeline management |
 
-## Collaborate with your team
+---
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## Business Intelligence Capabilities
 
-## Test and Deploy
+### Key Analytics Questions Answered:
+1. **🎯 Theme Popularity**: Which themes are most interesting to youth?
+2. **📈 Engagement Trends**: What trends can be observed in youth engagement over time?
+3. **❓ Question Type Impact**: How do different question types affect youth engagement?
+4. **🗓️ Seasonal Patterns**: Which themes are popular during specific seasons?
+5. **🏢 Organization Performance**: Which organizations get the most questions?
+6. **🔍 Sub-theme Analysis**: What subthemes interest youth the most?
+7. **🌍 Geographic Insights**: Which countries have the most youth engagement?
+8. **📊 Trending Topics**: What are the trending subthemes this year?
 
-Use the built-in continuous integration in GitLab.
+---
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Project Structure
 
-***
+```
+data_analysis/
+├── 📁 data_warehouse/              # Core data warehouse implementation
+│   ├── 📁 database_connection/     # Database configuration management
+│   ├── 📁 dimension/              # Local development environment
+│   ├── 📁 testData_Dimension/     # Test environment
+│   └── 📁 prodDWH_Dimension/      # Production environment
+├── 📁 visualization/              # Tableau dashboards and reports
+└── 📁 docs/                     
+```
 
-# Editing this README
+---
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Getting Started
 
-## Suggestions for a good README
+### Prerequisites
+- Python 3.x
+- PostgreSQL 13+
+- Tableau Desktop (for visualization)
+- Docker (for database setup) 
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### Database Setup
 
-## Name
-Choose a self-explaining name for your project.
+1. **Start the databases using Docker:**
+   ```bash
+   docker-compose up
+   ```
+   
+   **Note:** Docker is used in the main Electify Youth Java application (the integration project) to spin up all databases, not in this data analysis component. This data analysis project connects to the databases spun up by the main application.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+2. **Configure database connections:**
+   - Update connection settings in `data_warehouse/database_connection/`
+   - Ensure proper credentials for local, test, and production environments
+   
+### Running the ETL Pipeline
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+1. **Navigate to the data warehouse directory:**
+   ```bash
+   cd data_warehouse/dimension
+   ```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+2. **Execute the main ETL pipeline:**
+   ```bash
+   python main.py
+   ```
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+   This will:
+   - Create all dimensional tables
+   - Populate dimension tables with data
+   - Load fact tables
+   - Establish relationships through bridge tables
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Environment-Specific Execution
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- **Local Development**: `cd data_warehouse/dimension && python main.py`
+- **Test Environment**: `cd data_warehouse/testData_Dimension && python main.py`
+- **Production**: `cd data_warehouse/prodDWH_Dimension && python main.py`
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+---
+
+## Data Sources
+
+### Operational Database (ElectifyDB)
+- **Organizations**: Institution and organization data
+- **Questionnaires**: Survey definitions and metadata
+- **Questions**: Individual survey questions
+- **Answers**: Youth responses and engagement data
+- **Themes/Subthemes**: Categorization of survey content
+
+### Data Warehouse (ElectifyDB_dwh)
+- **Dimensional Model**: Optimized for analytical queries
+- **Historical Data**: Time-series analysis capabilities
+- **Aggregated Metrics**: Pre-calculated KPIs and measures
+
+---
+
+## Analytics & Visualization
+
+### SQL Analytics
+Pre-built analytical queries are available in `analytics.sql` covering:
+- Theme popularity analysis
+- Temporal engagement trends
+- Question type distribution
+- Seasonal pattern analysis
+- Geographic engagement metrics
+
+### Tableau Dashboards
+- **Interactive Visualizations**: Dynamic charts and graphs
+- **Real-time Data**: Live connection to data warehouse
+- **Multi-dimensional Analysis**: Drill-down capabilities
+- **Export Functionality**: PDF and image export options
+
+---
+
+## Configuration
+
+### Database Connections
+The project supports multiple database environments:
+
+| Environment | Configuration File | Purpose |
+|-------------|-------------------|---------|
+| Local | `database.ini` | Development |
+| Test | `database_test.ini` | Testing |
+| Production | `databaseDWHgcloud.ini` | Production |
+| Source DB | `databaseProdDB.ini` | Source system |
+
+### Environment Variables
+Ensure proper database credentials are configured in the respective `.ini` files.
+
+---
+
+## Integration with Main Project
+
+This data analysis component integrates with the main **Electify Youth** application:
+
+- **Data Source**: Consumes survey data from the main application's PostgreSQL database
+- **Real-time Updates**: ETL pipeline can be scheduled for regular data updates
+- **Business Intelligence**: Provides insights back to administrators and super administrators
+- **Reporting**: Enables data-driven decision making for survey content and timing
+
+---
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly across all environments
+5. Submit a pull request
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+---
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is part of the KDG-TI Integration 4 course (2023-2024) - Team 8.
